@@ -176,9 +176,6 @@ from unique_titles as ut;
 SELECT COUNT(ace.emp_no)
 from all_current_emp as ace;
 ```
-|Retirement Eligible|All Current| %|
-|---|---|---|
-|72,458|240,124|30|
 
 I created [another table](https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/title_counts.csv) storing the counts of mentorship eliglible, retirement elegible, and all current employees by title and department. 
 
@@ -279,9 +276,50 @@ ORDER BY d.dept_name DESC;
 Here are the average years of service by department. The median YOS are about the same. They are also about the same if you filter out the retiring employees, so I only chose to save the average years of service as a png.
 ![YOS by department](https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/avg_yos_all_emps.png)
 
-__Years of service overall:__
+#### Years of service overall:
+I uswd the percentile_cont function to find the quartiles and max to find the max years of service for all current employees.
+```
+select 
+PERCENTILE_CONT(0.5) WITHIN GROUP(ORDER BY (y.YOS) ) as med_yos
+from years_of_service as y;
+
+select 
+max (y.YOS) as max_yos
+from years_of_service as y;	   
+```		   
+
+## Conclusions:
+|Mentorship Eligible|Retirement Eligible|All Current|
+|---|---|---|
+|1549|72,458|240,124|
+Thirty percent of Pewlette Hackard's employees are retirement elegible. You can see in the table abave how many employees are needed to fill these jobs. If it is the intent for the mentorship eligible employees to fill these posts they will hardly make a scratch as they only account for about 1% of employees. The mentorship elegible employees do not cover all the titles the retirement eligible employees do. I would look to expand the mentorship beyond the current requirements. I think years of service would be a better metric, so I gathered data on avereage years of service. Years in a certain position or total years of experice would also be good metrics to mentors. 
+
+
+
+However, there are many experienced employees to fill these posts as retirment eligible employees leave the workforce. Even though there are a large number of employees leaving senior possitions there are many employees with 7+ years of experience who could be trained in to fill those rolls. The avereage years of service is 10 years which is significantly higher than the Bureau of Labor Statistics average of about 4 years, so it seems that PH's biggest problem is most likely hiring and/or retaining entry level employees.
+
 |Q1|Q2|Q3|Max|
 |--|--|--|--|
 |7|10|12|14|
+PH's Human Resource department should consider the following questions to find why are there so few employees who have been with the company for less than 7 years:
+- Is there high entry level turnover?
+	- Is there something about the workplace culture that specificly detracts entry level employees?
+	- Are there sufficient growth opprotunities?
+	- what are competators doing?
+- How are satisfied are your employees?
+	- How flexible is your scheduling?
+	- Are employees happy with their compensation and benefits? How quickly do they get access to these benefits?
+	- How do employees feel about company practices in regaurds to inclusion/diversity?
+	- Do they have a sense of autonomy in the workplace?
+	- Do employees feel supported by their management teams?
+	
+I recommend increasing annual new hires and focus on how you can improve the experience of these workers. 
 
+##### Authors notes:
+I had some issues with the ambiguity of the brief:
+- I'm not sure what year it's supposed to be. Is it 2000 and all of these people are retiring at age 45? Even if you are retirement eligible at 45, I think a significan number of people would stay for the extra social security benefits at 62. Since COVID-19 many people have been retiring early, but if it's somewhere between 2017-2022 then a lot of data is missing. 
+- Additionally would be nice to have some information on the mentorship program. Why are only people born in 1965 elegible?
+
+__Reference:__
+EMPLOYEE TENURE IN 2020. *Bureau of Labor statistics.* 9/22/2020. https://www.bls.gov/news.release/pdf/tenure.pdf 5/15/22.
 
