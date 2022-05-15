@@ -153,7 +153,7 @@ WHERE (e.birth_date BETWEEN '1952-01-01' AND '1955-12-31')
 	AND (dm.to_date = '9999-01-01')
 ORDER BY emp_no, to_date DESC;
 ```
-![Retirement eligible managers]()
+![Retirement eligible managers](https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/retiring_managers.png)
 
 ### All Current Employees
 I made a new table storing all the current employees to make it easier to compare the data from the retirement eligible and mentoship eligible employees.
@@ -277,16 +277,11 @@ group by d.dept_name, t.title
 ORDER BY d.dept_name DESC;
 ```
 Here are the average years of service by department. The median YOS are about the same. They are also about the same if you filter out the retiring employees, so I only chose to save the average years of service as a png.
-![YOS by department]()
+![YOS by department](https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/avg_yos_all_emps.png)
 
 __Years of service overall:__
 |Q1|Q2|Q3|Max|
 |--|--|--|--|
 |7|10|12|14|
 
-<<<<<<< HEAD
-=======
 
-
-
->>>>>>> d52cb5d2e59ac92686aae2d056725979282364e1
