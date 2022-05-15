@@ -1,5 +1,5 @@
 # Pewlett Hackard
-##Purpose
+## Purpose
 Pewlett Hackard is expecting to have a lot of their employees retiring soon and they are worried about having enough skilled employees to fill these positions. They have asked me to analyze their employee data to provide insight to this problem. To do this I found the current retirement eligible employees and their current titles. Pewlett Hackard is also looking to start a mentorship program for it’s employees born in 1965, so I found the current employees born in 1965 and their titles. 
 
 ## Methods - Deliverable 1: The Number of Retiring Employees by Title
@@ -133,3 +133,43 @@ ORDER BY emp_no, to_date DESC;
 ```
 ![ mentorship eligible employees.]( https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/mentorship_eligibilty.png)
 
+### Retiring Managers
+I found the mangers who are retirement eligible.
+```
+SELECT DISTINCT ON (dm.emp_no) dm.emp_no,
+e.first_name,
+e.last_name,
+d.dept_name,
+dm.from_date,
+dm.to_date
+INTO retiring_managers
+FROM dept_manager as dm
+	inner join employees as e
+	ON (dm.emp_no = e.emp_no)
+		INNER JOIN departments as d
+				ON (dm.dept_no = d.dept_no)
+	INNER JOIN titles AS t
+		ON (dm.emp_no = t.emp_no)
+WHERE (e.birth_date BETWEEN '1952-01-01' AND '1955-12-31')
+	AND (dm.to_date = '9999-01-01')
+ORDER BY emp_no, to_date DESC;
+```
+![Retirement eligible managers]()
+
+### All Current Employees
+I made a new table storing all the current employees to make it easier to compare the data from the retirement eligible and mentoship eligible employees.
+```
+SELECT e.emp_no,
+    e.first_name,
+    e.last_name,
+de.to_date
+INTO all_current_emp
+FROM employees as e
+LEFT JOIN dept_emp as de
+ON e.emp_no = de.emp_no
+WHERE de.to_date = ('9999-01-01');
+```
+I performed count functions on the unique titles and all current employee tables to get the total number of current employees.
+
+|Retirement Eligible|All Current| %|
+|72,458|240,124|30|
