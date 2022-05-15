@@ -1,5 +1,4 @@
 # Pewlett Hackard
-## Purpose
 Pewlett Hackard is expecting to have a lot of their employees retiring soon and they are worried about having enough skilled employees to fill these positions. They have asked me to analyze their employee data to provide insight to this problem. To do this I found the current retirement eligible employees and their current titles. Pewlett Hackard is also looking to start a mentorship program for it’s employees born in 1965, so I found the current employees born in 1965 and their titles. 
 
 ## Methods - Deliverable 1: The Number of Retiring Employees by Title
@@ -169,7 +168,122 @@ LEFT JOIN dept_emp as de
 ON e.emp_no = de.emp_no
 WHERE de.to_date = ('9999-01-01');
 ```
-I performed count functions on the unique titles and all current employee tables to get the total number of current employees.
+I performed count functions on the unique titles and all current employee tables to get the total employees. As you can see 30% of employees are retirement eligible.
+```
+SELECT COUNT(ut.emp_no)
+from unique_titles as ut;
 
+SELECT COUNT(ace.emp_no)
+from all_current_emp as ace;
+```
 |Retirement Eligible|All Current| %|
+|---|---|---|
 |72,458|240,124|30|
+
+I created [another table](https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/title_counts.csv) storing the counts of mentorship eliglible, retirement elegible, and all current employees by title and department. 
+
+```
+select 
+	d.dept_name,
+	t.title,
+	count(me.emp_no) as mentorship_eligibil,
+	count (ut.emp_no) as retiring,
+	count(ace.emp_no) as current_emp
+into emp_status_counts
+FROM all_current_emp as ace
+	Left join unique_titles as ut
+		ON (ace.emp_no = ut.emp_no)
+	Left join mentorship_eligibilty as me
+		ON (ace.emp_no = me.emp_no)		
+	inner join dept_emp as de
+		ON (ace.emp_no = de.emp_no)
+		INNER JOIN departments as d
+				ON (de.dept_no = d.dept_no)	
+	inner join titles as t
+		ON (ace.emp_no = t.emp_no)
+group by d.dept_name, t.title		
+ORDER BY d.dept_name, t.title DESC;
+```
+Then I used this data to calculate the percent of employees retirement eligible, the percent of employees eligible for the mentorship program, and the percent of positions these employees would fill. To see the data grouped by department and title view the [percentages csv in the resources folder](https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/percentage2.png).
+```
+select 
+	esc.dept_name,
+	esc.title,	
+	esc.retiring*100.0/ esc.current_emp as percent_retiring,
+	esc.mentorship_eligibil*100.0/esc.current_emp as percent_mentorship_eligibil
+into percentages
+FROM emp_status_count as esc
+ORDER BY esc.dept_name, esc.title DESC;	
+	
+select 
+	esc.dept_name,
+	round(sum(esc.retiring)*100.0/ sum(esc.current_emp)) as percent_retiring,
+	round(sum(esc.mentorship_eligibil)*100.0/sum(esc.current_emp)) as percent_mentorship_eligibil,
+	round(sum(esc.mentorship_eligibil)*100.0/sum(esc.retiring)) as percent_ME_vs_RE
+FROM emp_status_count as esc
+group by esc.dept_name		
+ORDER BY esc.dept_name DESC;
+```
+__Percentages by Department__
+![Percentages by department](https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/percentage2.png)
+
+### Years of Service
+
+```
+SELECT e.emp_no,
+DATE_PART('year', '1999-01-01'::date)-DATE_PART('year', e.hire_date::date) as YOS
+into years_of_service
+from employees as e;
+
+
+select 
+	d.dept_name,
+	t.title,
+	round(avg(y.YOS)) as avg_yos
+into dept_title_avg_yos
+FROM all_current_emp as ace
+	inner join years_of_service as y
+		ON (ace.emp_no = y.emp_no)
+	inner join dept_emp as de
+		ON (ace.emp_no = de.emp_no)
+		INNER JOIN departments as d
+				ON (de.dept_no = d.dept_no)	
+		inner join employees as e
+		ON (ace.emp_no = e.emp_no)
+		inner join titles as t
+		ON (ace.emp_no = t.emp_no)
+WHERE (e.birth_date not BETWEEN '1952-01-01' AND '1955-12-31')
+group by d.dept_name, t.title		
+ORDER BY d.dept_name DESC;	
+
+select 
+	d.dept_name,
+	t.title,
+PERCENTILE_CONT(0.5) WITHIN GROUP(ORDER BY (y.YOS) ) as med_yos
+into med_yos
+FROM all_current_emp as ace
+	inner join years_of_service as y
+		ON (ace.emp_no = y.emp_no)
+	inner join dept_emp as de
+		ON (ace.emp_no = de.emp_no)
+		INNER JOIN departments as d
+				ON (de.dept_no = d.dept_no)	
+		inner join employees as e
+		ON (ace.emp_no = e.emp_no)
+		inner join titles as t
+		ON (ace.emp_no = t.emp_no)
+WHERE (e.birth_date not BETWEEN '1952-01-01' AND '1955-12-31')
+group by d.dept_name, t.title		
+ORDER BY d.dept_name DESC;
+```
+Here are the average years of service by department. The median YOS are about the same. They are also about the same if you filter out the retiring employees, so I only chose to save the average years of service as a png.
+![YOS by department]()
+
+__Years of service overall:__
+|Q1|Q2|Q3|Max|
+|--|--|--|--|
+|7|10|12|14|
+
+
+
+
