@@ -28,6 +28,7 @@ FOREIGN KEY (dept_no) REFERENCES departments (dept_no),
 	PRIMARY KEY (emp_no, dept_no)
 );
 
+select * from managers
 --Salaries
 CREATE TABLE salaries (
   emp_no INT NOT NULL,
@@ -126,6 +127,8 @@ LEFT JOIN dept_emp as de
 ON ce.emp_no = de.emp_no
 GROUP BY de.dept_no
 ORDER BY de.dept_no;
+
+
 
 
 SELECT * FROM salaries
@@ -253,3 +256,237 @@ SELECT COUNT(ut.emp_no), ut.title
 INTO retiring_titles
 FROM unique_titles as ut
 GROUP BY ut.title;
+
+SELECT DISTINCT ON (e.emp_no) e.emp_no,
+e.first_name,
+e.last_name,
+t.title,
+t.from_date,
+t.to_date
+INTO  mentorship_eligibilty
+FROM employees as e
+	INNER JOIN titles AS t
+		ON (e.emp_no = t.emp_no)
+WHERE (e.birth_date BETWEEN '1965-01-01' AND '1965-12-31')
+	AND (t.to_date = '9999-01-01')
+ORDER BY emp_no, to_date DESC;
+
+SELECT DISTINCT ON (dm.emp_no) dm.emp_no,
+e.first_name,
+e.last_name,
+d.dept_name,
+dm.from_date,
+dm.to_date
+INTO retiring_managers
+FROM dept_manager as dm
+	inner join employees as e
+	ON (dm.emp_no = e.emp_no)
+		INNER JOIN departments as d
+				ON (dm.dept_no = d.dept_no)
+	INNER JOIN titles AS t
+		ON (dm.emp_no = t.emp_no)
+WHERE (e.birth_date BETWEEN '1952-01-01' AND '1955-12-31')
+	AND (dm.to_date = '9999-01-01')
+ORDER BY emp_no, to_date DESC;
+
+--INTO retiring_dept
+
+Select * from unique_titles 
+
+SELECT COUNT(ut.emp_no) as total, ut.title, d.dept_name
+Into retiring_title_dept
+FROM unique_titles as ut
+	inner join dept_emp as de
+	ON (ut.emp_no = de.emp_no)
+		INNER JOIN departments as d
+				ON (de.dept_no = d.dept_no)
+	inner join employees as e
+		ON (ut.emp_no = e.emp_no)
+WHERE (e.birth_date BETWEEN '1952-01-01' AND '1955-12-31')
+	AND (ut.to_date = '9999-01-01')
+GROUP BY (ut.title, d.dept_name)
+ORDER BY d.dept_name DESC;
+
+SELECT COUNT(ut.emp_no) , d.dept_name
+FROM unique_titles as ut
+	inner join dept_emp as de
+	ON (ut.emp_no = de.emp_no)
+		INNER JOIN departments as d
+				ON (de.dept_no = d.dept_no)
+	inner join employees as e
+		ON (ut.emp_no = e.emp_no)
+WHERE (e.birth_date BETWEEN '1952-01-01' AND '1955-12-31')
+	AND (ut.to_date = '9999-01-01')
+GROUP BY (d.dept_name)
+ORDER BY d.dept_name DESC;
+
+-- all current employees
+SELECT e.emp_no,
+    e.first_name,
+    e.last_name,
+de.to_date
+INTO all_current_emp
+FROM employees as e
+LEFT JOIN dept_emp as de
+ON e.emp_no = de.emp_no
+WHERE de.to_date = ('9999-01-01');
+
+SELECT COUNT(ut.emp_no)
+from unique_titles as ut;
+
+SELECT COUNT(ace.emp_no)
+from all_current_emp as ace;
+
+SELECT COUNT(ace.emp_no) as total, t.title, d.dept_name
+Into all_title_dept
+FROM all_current_emp as ace
+	inner join dept_emp as de
+	ON (ace.emp_no = de.emp_no)
+		INNER JOIN departments as d
+				ON (de.dept_no = d.dept_no)
+	inner join titles as t
+		ON (ace.emp_no = t.emp_no)
+GROUP BY (t.title, d.dept_name)
+ORDER BY d.dept_name DESC;
+
+select * from all_title_dept,
+
+SELECT atd.dept_name,
+	atd.title,
+	rtd.total as total_retire,
+	atd.total as total_emp
+FROM all_title_dept as atd
+	inner join retiring_title_dept as rtd
+		ON (atd.dept_name = rtd.dept_name)
+group by atd.dept_name, atd.title		
+ORDER BY atd.dept_name, atd.title DESC;
+
+SELECT d.dept_name,
+	t.title,
+if count (ut.emp_no) = 0 then 0
+	else case (count (ut.emp_no)/ count (ace.emp_no))*100 
+	end
+end
+FROM all_current_emp as ace
+	inner join unique_titles as ut
+		ON (ace.emp_no = ut.emp_no)
+	inner join dept_emp as de
+		ON (ace.emp_no = de.emp_no)
+		INNER JOIN departments as d
+				ON (de.dept_no = d.dept_no)	
+	inner join titles as t
+		ON (ace.emp_no = t.emp_no)
+group by d.dept_name, t.title		
+ORDER BY d.dept_name, t.title DESC;
+
+select * FROM mentorship_eligibility
+
+SELECT COUNT(me.emp_no) as total, t.title, d.dept_name
+into mentorship_eligibilty_count
+FROM mentorship_eligibilty as me
+	inner join all_current_emp as ace
+		ON (me.emp_no = ace.emp_no)
+	inner join dept_emp as de
+		ON (me.emp_no = de.emp_no)
+		INNER JOIN departments as d
+				ON (de.dept_no = d.dept_no)	
+	inner join titles as t
+		ON (me.emp_no = t.emp_no)
+group by d.dept_name, t.title		
+ORDER BY d.dept_name, t.title DESC;
+
+
+select 
+	d.dept_name,
+	t.title,
+	count(me.emp_no) as mentorship_eligibil,
+	count (ut.emp_no) as retiring,
+	count(ace.emp_no) as current_emp
+into emp_status_count
+FROM all_current_emp as ace
+	Left join unique_titles as ut
+		ON (ace.emp_no = ut.emp_no)
+	Left join mentorship_eligibilty as me
+		ON (ace.emp_no = me.emp_no)		
+	inner join dept_emp as de
+		ON (ace.emp_no = de.emp_no)
+		INNER JOIN departments as d
+				ON (de.dept_no = d.dept_no)	
+	inner join titles as t
+		ON (ace.emp_no = t.emp_no)
+group by d.dept_name, t.title		
+ORDER BY d.dept_name, t.title DESC;	
+
+select * from unique_titles 
+	
+select count (emp_no) from all_current_emp
+select count (emp_no) from unique_titles
+
+select 
+	d.dept_name,
+	count (ut.emp_no) as retiring,
+	 count(ace.emp_no) as current_emp
+FROM unique_titles as ut
+	inner join all_current_emp as ace
+		ON (ut.emp_no = ace.emp_no)
+	inner join dept_emp as de
+		ON (ut.emp_no = de.emp_no)
+		INNER JOIN departments as d
+				ON (de.dept_no = d.dept_no)	
+group by d.dept_name		
+ORDER BY d.dept_name DESC;	
+select 
+	esc.dept_name,
+	esc.title,	
+	esc.retiring*100.0/ esc.current_emp as percent_retiring,
+	esc.mentorship_eligibil*100.0/esc.current_emp as percent_mentorship_eligibil
+into percentages
+FROM emp_status_count as esc
+ORDER BY esc.dept_name, esc.title DESC;	
+	
+select 
+	esc.dept_name,
+	round(sum(esc.retiring)*100.0/ sum(esc.current_emp)) as percent_retiring,
+	round(sum(esc.mentorship_eligibil)*100.0/sum(esc.current_emp)) as percent_mentorship_eligibil,
+	round(sum(esc.mentorship_eligibil)*100.0/sum(esc.retiring)) as percent_ME_vs_RE
+FROM emp_status_count as esc
+group by esc.dept_name		
+ORDER BY esc.dept_name DESC;
+
+select 
+	esc.title,
+	sum(esc.retiring)*100.0/ sum(esc.current_emp) as percent_retiring,
+	sum(esc.mentorship_eligibil)*100.0/sum(esc.current_emp) as percent_mentorship_eligibil
+FROM emp_status_count as esc
+group by esc.title		
+ORDER BY esc.title DESC;
+
+select * from retiring_titles
+
+SELECT e.emp_no,
+DATE_PART('year', '1999-01-01'::date)-DATE_PART('year', e.hire_date::date) as YOS
+into years_of_service
+from employees as e;
+
+select 
+	d.dept_name,
+	t.title,
+	round(avg(y.YOS)) as avg_yos
+into dept_title_avg_yos
+FROM all_current_emp as ace
+	inner join years_of_service as y
+		ON (ace.emp_no = y.emp_no)
+	inner join dept_emp as de
+		ON (ace.emp_no = de.emp_no)
+		INNER JOIN departments as d
+				ON (de.dept_no = d.dept_no)	
+		inner join employees as e
+		ON (ace.emp_no = e.emp_no)
+		inner join titles as t
+		ON (ace.emp_no = t.emp_no)
+WHERE (e.birth_date not BETWEEN '1952-01-01' AND '1955-12-31')
+group by d.dept_name, t.title		
+ORDER BY d.dept_name DESC;	
+
+select * from emp_status_count
+

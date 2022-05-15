@@ -1,0 +1,45 @@
+Customer Service,Technique Leader,3,64,241
+Customer Service,Staff,92,3948,12956
+Customer Service,Senior Staff,85,3795,12352
+Customer Service,Senior Engineer,12,545,1790
+Customer Service,Manager,0,1,4
+Customer Service,Engineer,11,564,1927
+Customer Service,Assistant Engineer,1,64,240
+Development,Technique Leader,34,1795,6118
+Development,Staff,10,360,1123
+Development,Senior Staff,9,329,1085
+Development,Senior Engineer,268,12980,43364
+Development,Manager,0,0,2
+Development,Engineer,285,13997,46990
+Development,Assistant Engineer,40,1853,6193
+Finance,Staff,54,3352,11144
+Finance,Senior Staff,61,3226,10651
+Finance,Manager,0,0,2
+Human Resources,Staff,91,3513,11487
+Human Resources,Senior Staff,86,3315,10844
+Human Resources,Manager,0,1,2
+Marketing,Staff,99,3851,13023
+Marketing,Senior Staff,104,3701,12372
+Marketing,Manager,0,0,2
+Production,Technique Leader,35,1598,5211
+Production,Staff,6,389,1185
+Production,Senior Staff,6,390,1123
+Production,Senior Engineer,233,11256,37158
+Production,Manager,0,1,4
+Production,Engineer,224,12065,40102
+Production,Assistant Engineer,33,1578,5164
+Quality Management,Technique Leader,10,438,1424
+Quality Management,Senior Engineer,60,3142,10391
+Quality Management,Manager,0,1,4
+Quality Management,Engineer,65,3402,11150
+Quality Management,Assistant Engineer,8,438,1429
+Research,Technique Leader,2,94,321
+Research,Staff,76,3390,10834
+Research,Senior Staff,71,3212,10220
+Research,Senior Engineer,13,664,2250
+Research,Manager,0,1,2
+Research,Engineer,16,701,2416
+Research,Assistant Engineer,0,96,316
+Sales,Staff,211,10110,33584
+Sales,Senior Staff,210,9663,32032
+Sales,Manager,0,1,2

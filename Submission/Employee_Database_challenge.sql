@@ -42,12 +42,6 @@ e.last_name,
 t.title,
 t.from_date,
 t.to_date
-INTO  SELECT DISTINCT ON (e.emp_no) e.emp_no,
-e.first_name,
-e.last_name,
-t.title,
-t.from_date,
-t.to_date
 INTO  mentorship_eligibilty
 FROM employees as e
 	INNER JOIN titles AS t

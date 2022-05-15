@@ -1,0 +1,157 @@
+--retiring managers
+SELECT DISTINCT ON (dm.emp_no) dm.emp_no,
+e.first_name,
+e.last_name,
+d.dept_name,
+dm.from_date,
+dm.to_date
+INTO retiring_managers
+FROM dept_manager as dm
+	inner join employees as e
+	ON (dm.emp_no = e.emp_no)
+		INNER JOIN departments as d
+				ON (dm.dept_no = d.dept_no)
+	INNER JOIN titles AS t
+		ON (dm.emp_no = t.emp_no)
+WHERE (e.birth_date BETWEEN '1952-01-01' AND '1955-12-31')
+	AND (dm.to_date = '9999-01-01')
+ORDER BY emp_no, to_date DESC;
+
+--retiring_dept title
+SELECT COUNT(ut.emp_no) , ut.title, d.dept_name
+FROM unique_titles as ut
+	inner join dept_emp as de
+	ON (ut.emp_no = de.emp_no)
+		INNER JOIN departments as d
+				ON (de.dept_no = d.dept_no)
+	inner join employees as e
+		ON (ut.emp_no = e.emp_no)
+WHERE (e.birth_date BETWEEN '1952-01-01' AND '1955-12-31')
+	AND (ut.to_date = '9999-01-01')
+GROUP BY (ut.title, d.dept_name)
+ORDER BY d.dept_name DESC;
+
+select * from retiring_dept
+--retiring_dept
+SELECT COUNT(ut.emp_no) , d.dept_name
+FROM unique_titles as ut
+	inner join dept_emp as de
+	ON (ut.emp_no = de.emp_no)
+		INNER JOIN departments as d
+				ON (de.dept_no = d.dept_no)
+	inner join employees as e
+		ON (ut.emp_no = e.emp_no)
+WHERE (e.birth_date BETWEEN '1952-01-01' AND '1955-12-31')
+	AND (ut.to_date = '9999-01-01')
+GROUP BY (d.dept_name)
+ORDER BY d.dept_name DESC;
+
+
+
+
+select * from retiring_dept
+
+SELECT DISTINCT ON (dm.emp_no) dm.emp_no,
+e.first_name,
+e.last_name,
+d.dept_name,
+dm.from_date,
+dm.to_date
+INTO retiring_managers
+FROM dept_manager as dm
+	inner join employees as e
+	ON (dm.emp_no = e.emp_no)
+		INNER JOIN departments as d
+				ON (dm.dept_no = d.dept_no)
+	INNER JOIN titles AS t
+		ON (dm.emp_no = t.emp_no)
+WHERE (e.birth_date BETWEEN '1952-01-01' AND '1955-12-31')
+	AND (dm.to_date = '9999-01-01')
+ORDER BY emp_no, to_date DESC;
+
+-- all current employees
+SELECT e.emp_no,
+    e.first_name,
+    e.last_name,
+de.to_date
+INTO all_current_emp
+FROM employees as e
+LEFT JOIN dept_emp as de
+ON e.emp_no = de.emp_no
+WHERE de.to_date = ('9999-01-01');
+
+SELECT COUNT(ut.emp_no)
+from unique_titles as ut;
+
+SELECT COUNT(ace.emp_no)
+from all_current_emp as ace;
+
+--counts
+select 
+	d.dept_name,
+	t.title,
+	count(me.emp_no) as mentorship_eligibil,
+	count (ut.emp_no) as retiring,
+	count(ace.emp_no) as current_emp	
+FROM all_current_emp as ace
+	Left join unique_titles as ut
+		ON (ace.emp_no = ut.emp_no)
+	Left join mentorship_eligibilty as me
+		ON (ace.emp_no = me.emp_no)		
+	inner join dept_emp as de
+		ON (ace.emp_no = de.emp_no)
+		INNER JOIN departments as d
+				ON (de.dept_no = d.dept_no)	
+	inner join titles as t
+		ON (ace.emp_no = t.emp_no)
+group by d.dept_name, t.title		
+ORDER BY d.dept_name, t.title DESC;	
+
+--%
+select 
+	esc.dept_name,
+	esc.title,	
+	esc.retiring*100.0/ esc.current_emp as percent_retiring,
+	esc.mentorship_eligibil*100.0/esc.current_emp as percent_mentorship_eligibil
+into percentages
+FROM emp_status_count as esc
+ORDER BY esc.dept_name, esc.title DESC;	
+	
+
+--%departments
+select 
+	esc.dept_name,
+	sum(esc.retiring)*100.0/ sum(esc.current_emp) as percent_retiring,
+	sum(esc.mentorship_eligibil)*100.0/sum(esc.current_emp) as percent_mentorship_eligibil
+FROM emp_status_count as esc
+group by esc.dept_name		
+ORDER BY esc.dept_name DESC;
+
+--%titles
+select 
+	esc.title,
+	sum(esc.retiring)*100.0/ sum(esc.current_emp) as percent_retiring,
+	sum(esc.mentorship_eligibil)*100.0/sum(esc.current_emp) as percent_mentorship_eligibil
+FROM emp_status_count as esc
+group by esc.title		
+ORDER BY esc.title DESC;
+
+select 
+	d.dept_name,
+	t.title,
+	round(avg(y.YOS)) as avg_yos
+into dept_title_avg_yos
+FROM all_current_emp as ace
+	inner join years_of_service as y
+		ON (ace.emp_no = y.emp_no)
+	inner join dept_emp as de
+		ON (ace.emp_no = de.emp_no)
+		INNER JOIN departments as d
+				ON (de.dept_no = d.dept_no)	
+		inner join employees as e
+		ON (ace.emp_no = e.emp_no)
+		inner join titles as t
+		ON (ace.emp_no = t.emp_no)
+WHERE (e.birth_date not BETWEEN '1952-01-01' AND '1955-12-31')
+group by d.dept_name, t.title		
+ORDER BY d.dept_name DESC;	

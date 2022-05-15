@@ -1,0 +1,45 @@
+Sales,Manager,14
+Sales,Senior Staff,10
+Sales,Staff,9
+Research,Assistant Engineer,10
+Research,Engineer,9
+Research,Manager,14
+Research,Senior Engineer,10
+Research,Senior Staff,10
+Research,Staff,9
+Research,Technique Leader,10
+Quality Management,Assistant Engineer,9
+Quality Management,Engineer,9
+Quality Management,Manager,12
+Quality Management,Senior Engineer,10
+Quality Management,Technique Leader,9
+Production,Assistant Engineer,9
+Production,Engineer,10
+Production,Manager,12
+Production,Senior Engineer,10
+Production,Senior Staff,10
+Production,Staff,10
+Production,Technique Leader,9
+Marketing,Manager,14
+Marketing,Senior Staff,10
+Marketing,Staff,9
+Human Resources,Manager,14
+Human Resources,Senior Staff,10
+Human Resources,Staff,9
+Finance,Manager,14
+Finance,Senior Staff,10
+Finance,Staff,9
+Development,Assistant Engineer,9
+Development,Engineer,9
+Development,Manager,14
+Development,Senior Engineer,10
+Development,Senior Staff,10
+Development,Staff,9
+Development,Technique Leader,9
+Customer Service,Assistant Engineer,10
+Customer Service,Engineer,10
+Customer Service,Manager,10
+Customer Service,Senior Engineer,10
+Customer Service,Senior Staff,10
+Customer Service,Staff,9
+Customer Service,Technique Leader,10
