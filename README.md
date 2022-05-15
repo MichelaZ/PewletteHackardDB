@@ -3,7 +3,11 @@
 Pewlett Hackard is expecting to have a lot of their employees retiring soon and they are worried about having enough skilled employees to fill these positions. They have asked me to analyze their employee data to provide insight to this problem. To do this I found the current retirement eligible employees and their current titles. Pewlett Hackard is also looking to start a mentorship program for it’s employees born in 1965, so I found the current employees born in 1965 and their titles. 
 
 ## Methods - Deliverable 1: The Number of Retiring Employees by Title
-1. In the module I created tables and imported data into the employee, department, department employee, salary, department manager and titles tables.
+1. First I used QuickDBD to create an ERD for the data I was provided.
+
+![ERD](https://github.com/MichelaZ/PewletteHackardDB/blob/main/EmployeeDP.png)
+
+2. In the module I created tables and imported data into the employee, department, department employee, salary, department manager and titles tables.
 
 ```
 -- Departments
@@ -66,7 +70,7 @@ FOREIGN KEY (dept_no) REFERENCES departments (dept_no),
 	PRIMARY KEY (emp_no, dept_no)
 );
 ```
-2. I used an inner join to get the employee names, title, start and end date for that position for all retirement eligible employees into a new table called retirement_titles.
+3. I used an inner join to get the employee names, title, start and end date for that position for all retirement eligible employees into a new table called retirement_titles.
 ```
 SELECT e.emp_no,
 e.first_name,
@@ -83,7 +87,7 @@ ORDER BY emp_no, to_date DESC;
 ```
 ![Retirement titles.]( https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/retirement_titles.png)
 
-3. I used the distinct function to get rid of repeating values and filtered to only include current titles by setting the to date from the retirement titles table to '9999-01-01'. I added this to a new table called unique_titles and exported it.
+4. I used the distinct function to get rid of repeating values and filtered to only include current titles by setting the to date from the retirement titles table to '9999-01-01'. I added this to a new table called unique_titles and exported it.
 
 ```
 SELECT DISTINCT ON (rt.emp_no) rt.emp_no,
@@ -99,7 +103,7 @@ ORDER BY emp_no, to_date DESC;
 ```
 ![unique titles.]( https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/unique_titles.png)
 
-4. Using the count and group by functions I gathered a the number of employees in each department that were retirement eligible.
+5. Using the count and group by functions I gathered a the number of employees in each department that were retirement eligible.
 ```
 Select * from unique_titles 
 SELECT COUNT(ut.emp_no), ut.title
@@ -111,7 +115,7 @@ GROUP BY ut.title;
 
 ## Methods: Deliverable 2: The Employees Eligible for the Mentorship Program
 
-5. To get all the “mentorship eligible” employees I found all the distinct employees who were currently employed and born '1965-01-01' between '1965-12-31'
+6. To get all the “mentorship eligible” employees I found all the distinct employees who were currently employed and born '1965-01-01' between '1965-12-31'
 ```
 SELECT DISTINCT ON (e.emp_no) e.emp_no,
 e.first_name,
