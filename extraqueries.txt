@@ -136,11 +136,37 @@ FROM emp_status_count as esc
 group by esc.title		
 ORDER BY esc.title DESC;
 
+SELECT e.emp_no,
+DATE_PART('year', '1999-01-01'::date)-DATE_PART('year', e.hire_date::date) as YOS
+into years_of_service
+from employees as e;
+
+
 select 
 	d.dept_name,
 	t.title,
 	round(avg(y.YOS)) as avg_yos
 into dept_title_avg_yos
+FROM all_current_emp as ace
+	inner join years_of_service as y
+		ON (ace.emp_no = y.emp_no)
+	inner join dept_emp as de
+		ON (ace.emp_no = de.emp_no)
+		INNER JOIN departments as d
+				ON (de.dept_no = d.dept_no)	
+		inner join employees as e
+		ON (ace.emp_no = e.emp_no)
+		inner join titles as t
+		ON (ace.emp_no = t.emp_no)
+WHERE (e.birth_date not BETWEEN '1952-01-01' AND '1955-12-31')
+group by d.dept_name, t.title		
+ORDER BY d.dept_name DESC;	
+
+select 
+	d.dept_name,
+	t.title,
+PERCENTILE_CONT(0.5) WITHIN GROUP(ORDER BY (y.YOS) ) as med_yos
+into med_yos
 FROM all_current_emp as ace
 	inner join years_of_service as y
 		ON (ace.emp_no = y.emp_no)
