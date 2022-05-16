@@ -102,7 +102,7 @@ ORDER BY emp_no, to_date DESC;
 ```
 ![unique titles.]( https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/unique_titles.png)
 
-5. Using the count and group by functions I gathered a the number of employees in each department that were retirement eligible.
+5. Using the count and group by functions I gathered the number of employees in each department that were retirement eligible.
 ```
 Select * from unique_titles 
 SELECT COUNT(ut.emp_no), ut.title
@@ -132,31 +132,8 @@ ORDER BY emp_no, to_date DESC;
 ```
 ![ mentorship eligible employees.]( https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/mentorship_eligibilty.png)
 
-### Retiring Managers
-I found the mangers who are retirement eligible.
-```
-SELECT DISTINCT ON (dm.emp_no) dm.emp_no,
-e.first_name,
-e.last_name,
-d.dept_name,
-dm.from_date,
-dm.to_date
-INTO retiring_managers
-FROM dept_manager as dm
-	inner join employees as e
-	ON (dm.emp_no = e.emp_no)
-		INNER JOIN departments as d
-				ON (dm.dept_no = d.dept_no)
-	INNER JOIN titles AS t
-		ON (dm.emp_no = t.emp_no)
-WHERE (e.birth_date BETWEEN '1952-01-01' AND '1955-12-31')
-	AND (dm.to_date = '9999-01-01')
-ORDER BY emp_no, to_date DESC;
-```
-![Retirement eligible managers](https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/retiring_managers.png)
-
-### All Current Employees
-I made a new table storing all the current employees to make it easier to compare the data from the retirement eligible and mentoship eligible employees.
+### Counts and Percentages:
+I made a new table storing all the current employees to make it easier to compare the data from the retirement eligible and mentorship eligible employees.
 ```
 SELECT e.emp_no,
     e.first_name,
@@ -168,7 +145,7 @@ LEFT JOIN dept_emp as de
 ON e.emp_no = de.emp_no
 WHERE de.to_date = ('9999-01-01');
 ```
-I performed count functions on the unique titles and all current employee tables to get the total employees. As you can see 30% of employees are retirement eligible.
+I performed count functions on the unique titles and all current employee tables to get the total employees. 
 ```
 SELECT COUNT(ut.emp_no)
 from unique_titles as ut;
@@ -176,8 +153,7 @@ from unique_titles as ut;
 SELECT COUNT(ace.emp_no)
 from all_current_emp as ace;
 ```
-
-I created [another table](https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/title_counts.csv) storing the counts of mentorship eliglible, retirement elegible, and all current employees by title and department. 
+I created [another table](https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/title_counts.csv) storing the counts of mentorship eligible, retirement eligible, and all current employees by title and department. 
 
 ```
 select 
@@ -223,6 +199,17 @@ ORDER BY esc.dept_name DESC;
 ```
 __Percentages by Department__
 ![Percentages by department](https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/percentage2.png)
+
+
+## Conclusions:
+
+|Mentorship Eligible|Retirement Eligible|All Current|
+|---|---|---|
+|1549|72,458|240,124|
+
+Thirty percent of Pewlette Hackard's employees are retirement eligible. You can see in the table above how many employees are needed to fill these jobs. If it is the intent for the mentorship eligible employees to fill these posts, they will hardly make a scratch as they only account for about 1% of employees. When the distinct titles from the mentorship eligible employees (in table below do not cover all the titles of the retirement eligible employees from the [retiring_titles.csv](https://github.com/MichelaZ/PewletteHackardDB/blob/main/Submission/retiring_titles.csv). I would look to expand the mentorship beyond the current requirements. I think years of service would be a better metric, so I gathered data on average [years of service for each position](https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/avg_yos.csv). 
+
+![Mentorship eligible titles](https://github.com/MichelaZ/PewletteHackardDB/blob/main/ME%20_titles.png)
 
 ### Years of Service
 
@@ -276,8 +263,7 @@ ORDER BY d.dept_name DESC;
 Here are the average years of service by department. The median YOS are about the same. They are also about the same if you filter out the retiring employees, so I only chose to save the average years of service as a png.
 ![YOS by department](https://github.com/MichelaZ/PewletteHackardDB/blob/main/Resources/avg_yos_all_emps.png)
 
-#### Years of service overall:
-I uswd the percentile_cont function to find the quartiles and max to find the max years of service for all current employees.
+I used the percentile_cont function to find the quartiles and max to find the max years of service for all current employees.
 ```
 select 
 PERCENTILE_CONT(0.5) WITHIN GROUP(ORDER BY (y.YOS) ) as med_yos
@@ -286,40 +272,47 @@ from years_of_service as y;
 select 
 max (y.YOS) as max_yos
 from years_of_service as y;	   
-```		   
-
-## Conclusions:
-|Mentorship Eligible|Retirement Eligible|All Current|
-|---|---|---|
-|1549|72,458|240,124|
-Thirty percent of Pewlette Hackard's employees are retirement elegible. You can see in the table abave how many employees are needed to fill these jobs. If it is the intent for the mentorship eligible employees to fill these posts they will hardly make a scratch as they only account for about 1% of employees. The mentorship elegible employees do not cover all the titles the retirement eligible employees do. I would look to expand the mentorship beyond the current requirements. I think years of service would be a better metric, so I gathered data on avereage years of service. Years in a certain position or total years of experice would also be good metrics to mentors. 
-
-
-
-However, there are many experienced employees to fill these posts as retirment eligible employees leave the workforce. Even though there are a large number of employees leaving senior possitions there are many employees with 7+ years of experience who could be trained in to fill those rolls. The avereage years of service is 10 years which is significantly higher than the Bureau of Labor Statistics average of about 4 years, so it seems that PH's biggest problem is most likely hiring and/or retaining entry level employees.
+```	
 
 |Q1|Q2|Q3|Max|
 |--|--|--|--|
 |7|10|12|14|
+
+Looking at the years of service data there are many experienced employees to fill posts as retirement eligible employees leave the workforce. Even though there are a large number of employees leaving senior positions there are many employees with 7+ years of experience who could be trained in to fill those rolls. The average years of service is 10 years which is significantly higher than the Bureau of Labor Statistics average of about 4 years, so it seems that PH's biggest problem is most likely hiring and/or retaining entry level employees. I recommend increasing annual new hires and focusing on how you can improve the experience of these workers. 
+
 PH's Human Resource department should consider the following questions to find why are there so few employees who have been with the company for less than 7 years:
 - Is there high entry level turnover?
-	- Is there something about the workplace culture that specificly detracts entry level employees?
-	- Are there sufficient growth opprotunities?
-	- what are competators doing?
+	- Is there something about the workplace culture that specifically detracts entry level employees?
+	- Are there sufficient growth opportunities?
+	- what are competitors doing?
 - How are satisfied are your employees?
 	- How flexible is your scheduling?
 	- Are employees happy with their compensation and benefits? How quickly do they get access to these benefits?
-	- How do employees feel about company practices in regaurds to inclusion/diversity?
+	- How do employees feel about company practices in regards to inclusion/diversity?
 	- Do they have a sense of autonomy in the workplace?
 	- Do employees feel supported by their management teams?
 	
-I recommend increasing annual new hires and focus on how you can improve the experience of these workers. 
+This data does not necessarily count years of experice certain position orof experience with another company. Looking deeper into those data points would also be good metrics to find good mentors. Another idea I prefer to the 1965 year filter would be to ask employees and leadership staff for recommendations.	
 
-##### Authors notes:
-I had some issues with the ambiguity of the brief:
-- I'm not sure what year it's supposed to be. Is it 2000 and all of these people are retiring at age 45? Even if you are retirement eligible at 45, I think a significan number of people would stay for the extra social security benefits at 62. Since COVID-19 many people have been retiring early, but if it's somewhere between 2017-2022 then a lot of data is missing. 
-- Additionally would be nice to have some information on the mentorship program. Why are only people born in 1965 elegible?
+### Result Summary:
+- 30% of Pewlett Hackard employees are retirement eligible.
+- Only 1% of employees are eligible for the mentorship program.
+	- These employees do not have experience in all the positions of the retirement eligible employees.	
+- Pewlett Hackard employees have higher average years of service then most companies.
+- Increase hiring generally.
+- Improve conditions for entry-level employees.
 
 __Reference:__
+
 EMPLOYEE TENURE IN 2020. *Bureau of Labor statistics.* 9/22/2020. https://www.bls.gov/news.release/pdf/tenure.pdf 5/15/22.
+
+##### Authors notes:
+
+I had some issues with the ambiguity of the brief:
+- I'm not sure what year it's supposed to be. Is it 2000 and all these people are retiring at age 45? Even if you are retirement eligible at 45, I think a significant number of people would stay for the extra social security benefits at 62. Since COVID-19 many people have been retiring early, but if it's somewhere between 2017-2022 then a lot of data is missing. 
+- Additionally would be nice to have some information on the mentorship program. Why are only people born in 1965 eligible?
+- It is important to acknowledge that training requirements for the same position in different departments may very, so in the queries I preformed I tried to group by either department or title and department.
+- There are some other examples of me playing around with queries in the schema file and some examples of outputs that I didn't fit into the narrative of my analysis, but feel free to check them out.
+
+
 
